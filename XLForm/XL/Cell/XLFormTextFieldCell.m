@@ -47,9 +47,7 @@
 {
     if ((object == self.textLabel && [keyPath isEqualToString:@"text"]) ||  (object == self.imageView && [keyPath isEqualToString:@"image"])){
         if ([[change objectForKey:NSKeyValueChangeKindKey] isEqualToNumber:@(NSKeyValueChangeSetting)]){
-            if  (!self.rowDescriptor.usePushForText){
             [self.contentView setNeedsUpdateConstraints];
-            }
         }
     }
 }
