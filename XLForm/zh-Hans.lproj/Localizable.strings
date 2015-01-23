@@ -1,0 +1,13 @@
+/* 
+  Localizable.strings
+  XLForm
+
+  Created by Martin Barreto on 4/4/14.
+  Copyright (c) 2014 Xmartlabs. All rights reserved.
+*/
+
+
+"XLFormViewController_ValidationErrorTitle" = "哟!出错了";
+"XLFormController_DeleteConfirmation" = "你确定吗?";
+
+
