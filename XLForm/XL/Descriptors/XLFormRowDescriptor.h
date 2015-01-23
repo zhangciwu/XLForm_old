@@ -45,6 +45,7 @@ typedef NS_ENUM(NSUInteger, XLFormPresentationMode) {
 @property id cellClass;
 @property (readwrite) NSString *tag;
 @property (readonly) NSString *rowType;
+@property (nonatomic,assign) BOOL usePushForText; //do not edit text inline, push a new VC for editing
 @property NSString *title;
 @property (nonatomic) id value;
 @property Class valueTransformer;
@@ -66,6 +67,7 @@ typedef NS_ENUM(NSUInteger, XLFormPresentationMode) {
 -(UITableViewCell<XLFormDescriptorCell> *)cellForFormController:(XLFormViewController *)formController;
 
 @property NSString *requireMsg;
+@property (nonatomic) NSMutableArray *validators; //move to header because need to copy to another descripter
 -(void) addValidator: (id<XLFormValidatorProtocol>) validator;
 -(void) removeValidator: (id<XLFormValidatorProtocol>) validator;
 -(XLFormValidationStatus *) doValidation;

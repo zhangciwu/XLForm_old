@@ -30,7 +30,7 @@
 @interface XLFormRowDescriptor() <NSCopying>
 
 @property UITableViewCell<XLFormDescriptorCell> * cell;
-@property (nonatomic) NSMutableArray *validators;
+
 
 @end
 
@@ -50,6 +50,7 @@
         _buttonViewControllerPresentationMode = XLFormPresentationModeDefault;
         _cellStyle = UITableViewCellStyleValue1;
         _validators = [NSMutableArray new];
+        _usePushForText = NO;
         
     }
     return self;
