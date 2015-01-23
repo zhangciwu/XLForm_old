@@ -60,10 +60,23 @@ NSString *const kNotes = @"notes";
     row.required = YES;
     [section addFormRow:row];
     
+    // Name push
+    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"namepush" rowType:XLFormRowDescriptorTypeText title:@"Name(push)"];
+    row.usePushForText = YES;
+    row.required = YES;
+    [section addFormRow:row];
+    
     // Email
     row = [XLFormRowDescriptor formRowDescriptorWithTag:kEmail rowType:XLFormRowDescriptorTypeEmail title:@"Email"];
     // validate the email
     [row addValidator:[XLFormValidator emailValidator]];
+    [section addFormRow:row];
+    
+    // Email
+    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"emailpush" rowType:XLFormRowDescriptorTypeEmail title:@"Email(push)"];
+    // validate the email
+    [row addValidator:[XLFormValidator emailValidator]];
+    row.usePushForText=YES;
     [section addFormRow:row];
     
     // Twitter

@@ -28,6 +28,7 @@
 #import "XLFormRowDescriptor.h"
 #import "XLForm.h"
 #import "XLFormTextFieldCell.h"
+#import "XLFormTextDetailViewController.h"
 
 @interface XLFormTextFieldCell() <UITextFieldDelegate>
 
@@ -46,7 +47,9 @@
 {
     if ((object == self.textLabel && [keyPath isEqualToString:@"text"]) ||  (object == self.imageView && [keyPath isEqualToString:@"image"])){
         if ([[change objectForKey:NSKeyValueChangeKindKey] isEqualToNumber:@(NSKeyValueChangeSetting)]){
+            if  (!self.rowDescriptor.usePushForText){
             [self.contentView setNeedsUpdateConstraints];
+            }
         }
     }
 }
@@ -64,88 +67,127 @@
     [super configure];
     [self setSelectionStyle:UITableViewCellSelectionStyleNone];
     [self.contentView addSubview:self.textLabel];
-    [self.contentView addSubview:self.textField];
-    [self.contentView addConstraints:[self layoutConstraints]];
+    if (!self.rowDescriptor.usePushForText){
+        [self.contentView addSubview:self.textField];
+        [self.contentView addConstraints:[self layoutConstraints]];
+        [self.textField addTarget:self action:@selector(textFieldDidChange:) forControlEvents:UIControlEventEditingChanged];
+    }
+    
     [self.textLabel addObserver:self forKeyPath:@"text" options:NSKeyValueObservingOptionOld | NSKeyValueObservingOptionNew context:0];
     [self.imageView addObserver:self forKeyPath:@"image" options:NSKeyValueObservingOptionOld | NSKeyValueObservingOptionNew context:0];
     
-    [self.textField addTarget:self action:@selector(textFieldDidChange:) forControlEvents:UIControlEventEditingChanged];
+    
 }
 
 -(void)update
 {
     [super update];
-    self.textField.delegate = self;
-    self.textField.clearButtonMode = UITextFieldViewModeWhileEditing;
-    if ([self.rowDescriptor.rowType isEqualToString:XLFormRowDescriptorTypeText]){
-        self.textField.autocorrectionType = UITextAutocorrectionTypeDefault;
-        self.textField.autocapitalizationType = UITextAutocapitalizationTypeSentences;
-        self.textField.keyboardType = UIKeyboardTypeDefault;
-    }
-    else if ([self.rowDescriptor.rowType isEqualToString:XLFormRowDescriptorTypeName]){
-        self.textField.autocorrectionType = UITextAutocorrectionTypeNo;
-        self.textField.autocapitalizationType = UITextAutocapitalizationTypeWords;
-        self.textField.keyboardType = UIKeyboardTypeDefault;
-    }
-    else if ([self.rowDescriptor.rowType isEqualToString:XLFormRowDescriptorTypeEmail]){
-        self.textField.keyboardType = UIKeyboardTypeEmailAddress;
-        self.textField.autocorrectionType = UITextAutocorrectionTypeNo;
-        self.textField.autocapitalizationType = UITextAutocapitalizationTypeNone;
-    }
-    else if ([self.rowDescriptor.rowType isEqualToString:XLFormRowDescriptorTypeNumber]){
-        self.textField.keyboardType = UIKeyboardTypeNumbersAndPunctuation;
-        self.textField.autocorrectionType = UITextAutocorrectionTypeNo;
-        self.textField.autocapitalizationType = UITextAutocapitalizationTypeNone;
-    }
-    else if ([self.rowDescriptor.rowType isEqualToString:XLFormRowDescriptorTypeInteger]){
-        self.textField.keyboardType = UIKeyboardTypeNumberPad;
-    }
-    else if ([self.rowDescriptor.rowType isEqualToString:XLFormRowDescriptorTypeDecimal]){
-        self.textField.keyboardType = UIKeyboardTypeDecimalPad;
-    }
-    else if ([self.rowDescriptor.rowType isEqualToString:XLFormRowDescriptorTypePassword]){
-        self.textField.autocorrectionType = UITextAutocorrectionTypeNo;
-        self.textField.autocapitalizationType = UITextAutocapitalizationTypeNone;
-        self.textField.keyboardType = UIKeyboardTypeASCIICapable;
-        self.textField.secureTextEntry = YES;
-    }
-    else if ([self.rowDescriptor.rowType isEqualToString:XLFormRowDescriptorTypePhone]){
-        self.textField.keyboardType = UIKeyboardTypePhonePad;
-    }
-    else if ([self.rowDescriptor.rowType isEqualToString:XLFormRowDescriptorTypeURL]){
-        self.textField.autocorrectionType = UITextAutocorrectionTypeNo;
-        self.textField.autocapitalizationType = UITextAutocapitalizationTypeNone;
-        self.textField.keyboardType = UIKeyboardTypeURL;
-    }
-    else if ([self.rowDescriptor.rowType isEqualToString:XLFormRowDescriptorTypeTwitter]){
-        self.textField.keyboardType = UIKeyboardTypeTwitter;
-        self.textField.autocorrectionType = UITextAutocorrectionTypeNo;
-        self.textField.autocapitalizationType = UITextAutocapitalizationTypeNone;
-    }
-    else if ([self.rowDescriptor.rowType isEqualToString:XLFormRowDescriptorTypeAccount]){
-        self.textField.keyboardType = UIKeyboardTypeASCIICapable;
-        self.textField.autocorrectionType = UITextAutocorrectionTypeNo;
-        self.textField.autocapitalizationType = UITextAutocapitalizationTypeNone;
-    }
     
-    self.textLabel.text = ((self.rowDescriptor.required && self.rowDescriptor.title && self.rowDescriptor.sectionDescriptor.formDescriptor.addAsteriskToRequiredRowsTitle) ? [NSString stringWithFormat:@"%@*", self.rowDescriptor.title] : self.rowDescriptor.title);
-    
-    self.textField.text = self.rowDescriptor.value ? [self.rowDescriptor.value displayText] : self.rowDescriptor.noValueDisplayText;
-    [self.textField setEnabled:!self.rowDescriptor.disabled];
-    self.textLabel.textColor  = self.rowDescriptor.disabled ? [UIColor grayColor] : [UIColor blackColor];
-    self.textField.textColor = self.rowDescriptor.disabled ? [UIColor grayColor] : [UIColor blackColor];
-    self.textLabel.font = [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
-    self.textField.font = [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
+    if (self.rowDescriptor.usePushForText) {
+        
+        self.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+        [self.textLabel setText:self.rowDescriptor.title];
+        self.textLabel.textColor  = self.rowDescriptor.disabled ? [UIColor grayColor] : [UIColor blackColor];
+        self.selectionStyle = self.rowDescriptor.disabled || [self.rowDescriptor.rowType isEqualToString:XLFormRowDescriptorTypeInfo] ? UITableViewCellSelectionStyleNone : UITableViewCellSelectionStyleDefault;
+        self.textLabel.text = [NSString stringWithFormat:@"%@%@", self.rowDescriptor.title, self.rowDescriptor.required && self.rowDescriptor.sectionDescriptor.formDescriptor.addAsteriskToRequiredRowsTitle ? @"*" : @""];
+        self.detailTextLabel.text = self.rowDescriptor.value ? [self.rowDescriptor.value displayText] : self.rowDescriptor.noValueDisplayText;
+        self.textLabel.font = [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
+        self.detailTextLabel.font = [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
+        
+    }else{
+        
+        self.textField.delegate = self;
+        self.textField.clearButtonMode = UITextFieldViewModeWhileEditing;
+        if ([self.rowDescriptor.rowType isEqualToString:XLFormRowDescriptorTypeText]){
+            self.textField.autocorrectionType = UITextAutocorrectionTypeDefault;
+            self.textField.autocapitalizationType = UITextAutocapitalizationTypeSentences;
+            self.textField.keyboardType = UIKeyboardTypeDefault;
+        }
+        else if ([self.rowDescriptor.rowType isEqualToString:XLFormRowDescriptorTypeName]){
+            self.textField.autocorrectionType = UITextAutocorrectionTypeNo;
+            self.textField.autocapitalizationType = UITextAutocapitalizationTypeWords;
+            self.textField.keyboardType = UIKeyboardTypeDefault;
+        }
+        else if ([self.rowDescriptor.rowType isEqualToString:XLFormRowDescriptorTypeEmail]){
+            self.textField.keyboardType = UIKeyboardTypeEmailAddress;
+            self.textField.autocorrectionType = UITextAutocorrectionTypeNo;
+            self.textField.autocapitalizationType = UITextAutocapitalizationTypeNone;
+        }
+        else if ([self.rowDescriptor.rowType isEqualToString:XLFormRowDescriptorTypeNumber]){
+            self.textField.keyboardType = UIKeyboardTypeNumbersAndPunctuation;
+            self.textField.autocorrectionType = UITextAutocorrectionTypeNo;
+            self.textField.autocapitalizationType = UITextAutocapitalizationTypeNone;
+        }
+        else if ([self.rowDescriptor.rowType isEqualToString:XLFormRowDescriptorTypeInteger]){
+            self.textField.keyboardType = UIKeyboardTypeNumberPad;
+        }
+        else if ([self.rowDescriptor.rowType isEqualToString:XLFormRowDescriptorTypeDecimal]){
+            self.textField.keyboardType = UIKeyboardTypeDecimalPad;
+        }
+        else if ([self.rowDescriptor.rowType isEqualToString:XLFormRowDescriptorTypePassword]){
+            self.textField.autocorrectionType = UITextAutocorrectionTypeNo;
+            self.textField.autocapitalizationType = UITextAutocapitalizationTypeNone;
+            self.textField.keyboardType = UIKeyboardTypeASCIICapable;
+            self.textField.secureTextEntry = YES;
+        }
+        else if ([self.rowDescriptor.rowType isEqualToString:XLFormRowDescriptorTypePhone]){
+            self.textField.keyboardType = UIKeyboardTypePhonePad;
+        }
+        else if ([self.rowDescriptor.rowType isEqualToString:XLFormRowDescriptorTypeURL]){
+            self.textField.autocorrectionType = UITextAutocorrectionTypeNo;
+            self.textField.autocapitalizationType = UITextAutocapitalizationTypeNone;
+            self.textField.keyboardType = UIKeyboardTypeURL;
+        }
+        else if ([self.rowDescriptor.rowType isEqualToString:XLFormRowDescriptorTypeTwitter]){
+            self.textField.keyboardType = UIKeyboardTypeTwitter;
+            self.textField.autocorrectionType = UITextAutocorrectionTypeNo;
+            self.textField.autocapitalizationType = UITextAutocapitalizationTypeNone;
+        }
+        else if ([self.rowDescriptor.rowType isEqualToString:XLFormRowDescriptorTypeAccount]){
+            self.textField.keyboardType = UIKeyboardTypeASCIICapable;
+            self.textField.autocorrectionType = UITextAutocorrectionTypeNo;
+            self.textField.autocapitalizationType = UITextAutocapitalizationTypeNone;
+        }
+        
+        self.textLabel.text = ((self.rowDescriptor.required && self.rowDescriptor.title && self.rowDescriptor.sectionDescriptor.formDescriptor.addAsteriskToRequiredRowsTitle) ? [NSString stringWithFormat:@"%@*", self.rowDescriptor.title] : self.rowDescriptor.title);
+        
+        self.textField.text = self.rowDescriptor.value ? [self.rowDescriptor.value displayText] : self.rowDescriptor.noValueDisplayText;
+        [self.textField setEnabled:!self.rowDescriptor.disabled];
+        self.textLabel.textColor  = self.rowDescriptor.disabled ? [UIColor grayColor] : [UIColor blackColor];
+        self.textField.textColor = self.rowDescriptor.disabled ? [UIColor grayColor] : [UIColor blackColor];
+        self.textLabel.font = [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
+        self.textField.font = [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
+        
+    }
 }
 
 -(BOOL)formDescriptorCellBecomeFirstResponder
 {
-    return [self.textField becomeFirstResponder];
+    if (self.rowDescriptor.usePushForText) {
+        return NO;
+    }else{
+        return [self.textField becomeFirstResponder];
+    }
 }
 
 -(BOOL)formDescriptorCellResignFirstResponder
 {
-    return [self.textField resignFirstResponder];
+    if (self.rowDescriptor.usePushForText) {
+        return NO;
+    }else{
+        return [self.textField resignFirstResponder];
+    }
+}
+
+#pragma mark - selected
+
+-(void)formDescriptorCellDidSelectedWithFormController:(XLFormViewController *)controller
+{
+    
+    if (self.rowDescriptor.usePushForText){
+        XLFormTextDetailViewController * detailVC = [[XLFormTextDetailViewController alloc]initWithRowDescriptor:self.rowDescriptor];
+        [controller.navigationController pushViewController:detailVC animated:YES];
+    }
 }
 
 #pragma mark - Properties
@@ -160,7 +202,9 @@
 
 -(UITextField *)textField
 {
+    if (self.rowDescriptor.usePushForText) return nil;
     if (_textField) return _textField;
+    
     _textField = [UITextField autolayoutView];
     [_textField setFont:[UIFont preferredFontForTextStyle:UIFontTextStyleBody]];
     return _textField;
@@ -170,6 +214,7 @@
 
 -(NSArray *)layoutConstraints
 {
+    if (self.rowDescriptor.usePushForText) return nil;
     NSMutableArray * result = [[NSMutableArray alloc] init];
     [self.textLabel setContentHuggingPriority:500 forAxis:UILayoutConstraintAxisHorizontal];
     [result addObjectsFromArray:[NSLayoutConstraint constraintsWithVisualFormat:@"H:[_textLabel]-[_textField]" options:NSLayoutFormatAlignAllBaseline metrics:0 views:NSDictionaryOfVariableBindings(_textLabel, _textField)]];
@@ -179,10 +224,13 @@
 
 -(void)updateConstraints
 {
+    
     if (self.dynamicCustomConstraints){
         [self.contentView removeConstraints:self.dynamicCustomConstraints];
     }
-    NSDictionary * views = @{@"label": self.textLabel, @"textField": self.textField, @"image": self.imageView};
+    NSDictionary * views = @{@"label": self.textLabel,
+                             @"textField": self.rowDescriptor.usePushForText?self.detailTextLabel:self.textField,
+                             @"image": self.imageView};
     if (self.imageView.image){
         if (self.textLabel.text.length > 0){
             self.dynamicCustomConstraints = [NSLayoutConstraint constraintsWithVisualFormat:@"H:[image]-[label]-[textField]-4-|" options:0 metrics:0 views:views];
