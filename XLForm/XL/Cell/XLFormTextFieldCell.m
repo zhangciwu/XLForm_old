@@ -67,17 +67,29 @@
     [super configure];
     [self setSelectionStyle:UITableViewCellSelectionStyleNone];
     [self.contentView addSubview:self.textLabel];
-    if (!self.rowDescriptor.usePushForText){
+   
         [self.contentView addSubview:self.textField];
         [self.contentView addConstraints:[self layoutConstraints]];
         [self.textField addTarget:self action:@selector(textFieldDidChange:) forControlEvents:UIControlEventEditingChanged];
-    }
+    
     
     [self.textLabel addObserver:self forKeyPath:@"text" options:NSKeyValueObservingOptionOld | NSKeyValueObservingOptionNew context:0];
     [self.imageView addObserver:self forKeyPath:@"image" options:NSKeyValueObservingOptionOld | NSKeyValueObservingOptionNew context:0];
     
     
 }
+
+-(void)setRowDescriptor:(XLFormRowDescriptor *)rowDescriptor
+{
+    [super setRowDescriptor:rowDescriptor];
+    if (rowDescriptor.usePushForText) {
+        [self.textField removeFromSuperview];
+        _textField=nil;
+        [self.contentView addConstraints:[self layoutConstraintsForPush]];
+        [self.contentView setNeedsUpdateConstraints];
+    }
+}
+
 
 -(void)update
 {
@@ -202,8 +214,8 @@
 
 -(UITextField *)textField
 {
-    if (self.rowDescriptor.usePushForText) return nil;
     if (_textField) return _textField;
+    if (self.rowDescriptor.usePushForText) return nil;
     
     _textField = [UITextField autolayoutView];
     [_textField setFont:[UIFont preferredFontForTextStyle:UIFontTextStyleBody]];
@@ -214,7 +226,6 @@
 
 -(NSArray *)layoutConstraints
 {
-    if (self.rowDescriptor.usePushForText) return nil;
     NSMutableArray * result = [[NSMutableArray alloc] init];
     [self.textLabel setContentHuggingPriority:500 forAxis:UILayoutConstraintAxisHorizontal];
     [result addObjectsFromArray:[NSLayoutConstraint constraintsWithVisualFormat:@"H:[_textLabel]-[_textField]" options:NSLayoutFormatAlignAllBaseline metrics:0 views:NSDictionaryOfVariableBindings(_textLabel, _textField)]];
@@ -222,8 +233,17 @@
     return result;
 }
 
+-(NSArray *)layoutConstraintsForPush
+{
+    NSMutableArray * result = [[NSMutableArray alloc] init];
+    
+    [result addObjectsFromArray:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-12-[_textLabel]-12-|" options:NSLayoutFormatAlignAllBaseline metrics:nil views:NSDictionaryOfVariableBindings(_textLabel)]];
+    return result;
+}
+
 -(void)updateConstraints
 {
+    
     
     if (self.dynamicCustomConstraints){
         [self.contentView removeConstraints:self.dynamicCustomConstraints];
