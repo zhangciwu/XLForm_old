@@ -94,13 +94,16 @@
     [super update];
     
     if (self.rowDescriptor.usePushForText) {
-        
-        self.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+        if (!self.rowDescriptor.disabled) {
+            self.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+        }else{
+            self.accessoryType = UITableViewCellAccessoryNone;
+        }
         [self.textLabel setText:self.rowDescriptor.title];
         self.textLabel.textColor  = self.rowDescriptor.disabled ? [UIColor grayColor] : [UIColor blackColor];
         self.selectionStyle = self.rowDescriptor.disabled || [self.rowDescriptor.rowType isEqualToString:XLFormRowDescriptorTypeInfo] ? UITableViewCellSelectionStyleNone : UITableViewCellSelectionStyleDefault;
         self.textLabel.text = [NSString stringWithFormat:@"%@%@", self.rowDescriptor.title, self.rowDescriptor.required && self.rowDescriptor.sectionDescriptor.formDescriptor.addAsteriskToRequiredRowsTitle ? @"*" : @""];
-        self.detailTextLabel.text = self.rowDescriptor.value ? [self.rowDescriptor.value displayText] : self.rowDescriptor.noValueDisplayText;
+        self.detailTextLabel.text = self.rowDescriptor.value ? [NSString stringWithFormat:@"%@%@",[self.rowDescriptor.value displayText],self.rowDescriptor.appendStringForPushText?self.rowDescriptor.appendStringForPushText:@""] : self.rowDescriptor.noValueDisplayText;
         self.textLabel.font = [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
         self.detailTextLabel.font = [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
         
@@ -194,7 +197,7 @@
 -(void)formDescriptorCellDidSelectedWithFormController:(XLFormViewController *)controller
 {
     
-    if (self.rowDescriptor.usePushForText){
+    if (self.rowDescriptor.usePushForText && !self.rowDescriptor.disabled){
         XLFormTextDetailViewController * detailVC = [[XLFormTextDetailViewController alloc]initWithRowDescriptor:self.rowDescriptor];
         [controller.navigationController pushViewController:detailVC animated:YES];
     }
