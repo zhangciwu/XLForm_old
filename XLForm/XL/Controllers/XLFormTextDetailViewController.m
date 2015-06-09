@@ -77,6 +77,8 @@
 
 -(IBAction)savePressed:(UIBarButtonItem * __unused)button
 {
+    button.enabled = NO;
+    DLog(@"button :%@", button);
     NSArray * validationErrors = [self formValidationErrors];
     if (validationErrors.count > 0){
         [self showFormValidationError:[validationErrors firstObject]];
@@ -86,7 +88,7 @@
 //    UIAlertView * alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Valid Form", nil) message:@"No errors found" delegate:self cancelButtonTitle:NSLocalizedString(@"OK", nil) otherButtonTitles:nil];
 //    [alertView show];
     
-    self.rowDescriptor.value=self.row.value;
+    [self.rowDescriptor setValue :self.row.value ];
     [self.navigationController popViewControllerAnimated:YES];
 }
 

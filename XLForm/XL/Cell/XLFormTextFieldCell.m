@@ -65,16 +65,20 @@
     [super configure];
     [self setSelectionStyle:UITableViewCellSelectionStyleNone];
     [self.contentView addSubview:self.textLabel];
-   
-        [self.contentView addSubview:self.textField];
+
+    [self.contentView addSubview:self.textField];
+    if(self.rowDescriptor.usePushForText){
+        [self.contentView addConstraints:[self layoutConstraintsForPush]];
+    }else{
         [self.contentView addConstraints:[self layoutConstraints]];
-        [self.textField addTarget:self action:@selector(textFieldDidChange:) forControlEvents:UIControlEventEditingChanged];
-    
-    
+    }
+    [self.textField addTarget:self action:@selector(textFieldDidChange:) forControlEvents:UIControlEventEditingChanged];
+
+
     [self.textLabel addObserver:self forKeyPath:@"text" options:NSKeyValueObservingOptionOld | NSKeyValueObservingOptionNew context:0];
     [self.imageView addObserver:self forKeyPath:@"image" options:NSKeyValueObservingOptionOld | NSKeyValueObservingOptionNew context:0];
-    
-    
+
+
 }
 
 -(void)setRowDescriptor:(XLFormRowDescriptor *)rowDescriptor
@@ -92,24 +96,29 @@
 -(void)update
 {
     [super update];
-    
+
     if (self.rowDescriptor.usePushForText) {
         if (!self.rowDescriptor.disabled) {
             self.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
         }else{
             self.accessoryType = UITableViewCellAccessoryNone;
         }
-        [self.textLabel setText:self.rowDescriptor.title];
-        self.textLabel.textColor  = self.rowDescriptor.disabled ? [UIColor grayColor] : [UIColor blackColor];
+        UILabel *label=[self textLabelOfSuper];
+        [label setText:self.rowDescriptor.title];
+        label.textColor  = self.rowDescriptor.disabled ? [UIColor grayColor] : [UIColor blackColor];
         self.selectionStyle = self.rowDescriptor.disabled || [self.rowDescriptor.rowType isEqualToString:XLFormRowDescriptorTypeInfo] ? UITableViewCellSelectionStyleNone : UITableViewCellSelectionStyleDefault;
-        self.textLabel.text = [NSString stringWithFormat:@"%@%@", self.rowDescriptor.title, self.rowDescriptor.required && self.rowDescriptor.sectionDescriptor.formDescriptor.addAsteriskToRequiredRowsTitle ? @"*" : @""];
+        label.text = [NSString stringWithFormat:@"%@%@", self.rowDescriptor.title, self.rowDescriptor.required && self.rowDescriptor.sectionDescriptor.formDescriptor.addAsteriskToRequiredRowsTitle ? @"*" : @""];
         self.detailTextLabel.textAlignment=NSTextAlignmentRight;
         self.detailTextLabel.text = self.rowDescriptor.value ? [NSString stringWithFormat:@"%@%@",[self.rowDescriptor.value displayText],self.rowDescriptor.appendStringForPushText?self.rowDescriptor.appendStringForPushText:@""] : self.rowDescriptor.noValueDisplayText;
-        self.textLabel.font = [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
+        label.font = [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
         self.detailTextLabel.font = [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
-        
+
+        if(_textLabel){
+            [_textLabel removeFromSuperview];
+        }
+
     }else{
-        
+
         self.textField.delegate = self;
         self.textField.clearButtonMode = UITextFieldViewModeWhileEditing;
         if ([self.rowDescriptor.rowType isEqualToString:XLFormRowDescriptorTypeText]){
@@ -162,16 +171,16 @@
             self.textField.autocorrectionType = UITextAutocorrectionTypeNo;
             self.textField.autocapitalizationType = UITextAutocapitalizationTypeNone;
         }
-        
+
         self.textLabel.text = ((self.rowDescriptor.required && self.rowDescriptor.title && self.rowDescriptor.sectionDescriptor.formDescriptor.addAsteriskToRequiredRowsTitle) ? [NSString stringWithFormat:@"%@*", self.rowDescriptor.title] : self.rowDescriptor.title);
-        
+
         self.textField.text = self.rowDescriptor.value ? [self.rowDescriptor.value displayText] : self.rowDescriptor.noValueDisplayText;
         [self.textField setEnabled:!self.rowDescriptor.disabled];
         self.textLabel.textColor  = self.rowDescriptor.disabled ? [UIColor grayColor] : [UIColor blackColor];
         self.textField.textColor = self.rowDescriptor.disabled ? [UIColor grayColor] : [UIColor blackColor];
         self.textLabel.font = [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
         self.textField.font = [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
-        
+
     }
 }
 
@@ -197,7 +206,7 @@
 
 -(void)formDescriptorCellDidSelectedWithFormController:(XLFormViewController *)controller
 {
-    
+
     if (self.rowDescriptor.usePushForText && !self.rowDescriptor.disabled){
         XLFormTextDetailViewController * detailVC = [[XLFormTextDetailViewController alloc]initWithRowDescriptor:self.rowDescriptor];
         [controller.navigationController pushViewController:detailVC animated:YES];
@@ -214,11 +223,17 @@
     return _textLabel;
 }
 
+
+-(UILabel *)textLabelOfSuper
+{
+    return [super textLabel];
+}
+
 -(UITextField *)textField
 {
     if (_textField) return _textField;
     if (self.rowDescriptor.usePushForText) return nil;
-    
+
     _textField = [UITextField autolayoutView];
     [_textField setFont:[UIFont preferredFontForTextStyle:UIFontTextStyleBody]];
     return _textField;
@@ -238,21 +253,29 @@
 -(NSArray *)layoutConstraintsForPush
 {
     NSMutableArray * result = [[NSMutableArray alloc] init];
-    
-    [result addObjectsFromArray:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-12-[_textLabel]-12-|" options:NSLayoutFormatAlignAllBaseline metrics:nil views:NSDictionaryOfVariableBindings(_textLabel)]];
+    //[result addObjectsFromArray:[NSLayoutConstraint constraintsWithVisualFormat:@"H:[_textLabel]-[_textField]" options:NSLayoutFormatAlignAllBaseline metrics:0 views:NSDictionaryOfVariableBindings(_textLabel, _textField)]];
+    [result addObjectsFromArray:[NSLayoutConstraint constraintsWithVisualFormat:@"H:[_textLabel]-[_textField]" options:NSLayoutFormatAlignAllBaseline metrics:0 views:@{
+            @"_textLabel": [self textLabelOfSuper],
+            @"_textField":self.detailTextLabel,
+    }]];
+
+//    [result addObjectsFromArray:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-12-[_textField]-12-|" options:NSLayoutFormatAlignAllBaseline metrics:nil views:@{
+//            @"_textLabel":_textLabel,
+//            @"_textField":self.detailTextLabel,
+//    }]];
     return result;
 }
 
 -(void)updateConstraints
 {
     
-    
+
     if (self.dynamicCustomConstraints){
         [self.contentView removeConstraints:self.dynamicCustomConstraints];
     }
-    NSDictionary * views = @{@"label": self.textLabel,
-                             @"textField": self.rowDescriptor.usePushForText?self.detailTextLabel:self.textField,
-                             @"image": self.imageView};
+    NSDictionary * views = @{@"label": self.rowDescriptor.usePushForText?[self textLabelOfSuper]:self.textLabel,
+            @"textField": self.rowDescriptor.usePushForText?self.detailTextLabel:self.textField,
+            @"image": self.imageView};
     if (self.imageView.image){
         if (self.textLabel.text.length > 0){
             self.dynamicCustomConstraints = [NSLayoutConstraint constraintsWithVisualFormat:@"H:[image]-[label]-[textField]-4-|" options:0 metrics:0 views:views];
@@ -270,6 +293,7 @@
         }
     }
     [self.contentView addConstraints:self.dynamicCustomConstraints];
+    
     [super updateConstraints];
 }
 

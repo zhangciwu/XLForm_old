@@ -28,7 +28,7 @@ DEPENDENCIES:
   - XLDataLoader (~> 1.1)
 
 SPEC CHECKSUMS:
-  AFNetworking: 0aabc6fae66d6e5d039eeb21c315843c7aae51ab
-  XLDataLoader: bd783ebe782932a6390ffc7619fcd884c8600944
+  AFNetworking: 41d45d2c14219af0fa5addf3cfd433a002c13c9f
+  XLDataLoader: 7d466e086f4b6ecd144e880be8232adbe80aef52
 
-COCOAPODS: 0.35.0
+COCOAPODS: 0.36.0
