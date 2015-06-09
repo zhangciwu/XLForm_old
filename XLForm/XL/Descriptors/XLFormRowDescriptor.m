@@ -26,6 +26,7 @@
 #import "XLForm.h"
 #import "XLFormViewController.h"
 #import "XLFormRowDescriptor.h"
+#import "XLFormTextDetailViewController.h"
 
 @interface XLFormRowDescriptor() <NSCopying>
 
@@ -50,7 +51,7 @@
         _buttonViewControllerPresentationMode = XLFormPresentationModeDefault;
         _cellStyle = UITableViewCellStyleValue1;
         _validators = [NSMutableArray new];
-        _usePushForText = NO;
+        //_usePushForText = NO;
         
     }
     return self;
@@ -65,6 +66,20 @@
 +(XLFormRowDescriptor *)formRowDescriptorWithTag:(NSString *)tag rowType:(NSString *)rowType title:(NSString *)title
 {
     return [[XLFormRowDescriptor alloc] initWithTag:tag rowType:rowType title:title];
+}
+
++(XLFormRowDescriptor *)textPushRowDescriptorWithTag:(NSString *)tag innerRowType:(NSString *)rowType title:(NSString *)title
+        innerTitle:(NSString *)innerTitle
+{
+    XLFormRowDescriptor * row=[XLFormRowDescriptor formRowDescriptorWithTag:tag rowType:XLFormRowDescriptorTypeSelectorPush title:title];
+    row.pushInnerRowType=rowType;
+    row.pushInnerTitle=innerTitle;
+
+
+    row.selectorControllerClass=[XLFormTextDetailViewController class];
+
+
+    return row;
 }
 
 -(UITableViewCell<XLFormDescriptorCell> *)cellForFormController:(XLFormViewController *)formController

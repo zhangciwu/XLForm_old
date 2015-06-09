@@ -45,7 +45,7 @@ typedef NS_ENUM(NSUInteger, XLFormPresentationMode) {
 @property id cellClass;
 @property (readwrite) NSString *tag;
 @property (readonly) NSString *rowType;
-@property (nonatomic,assign) BOOL usePushForText; //do not edit text inline, push a new VC for editing
+//@property (nonatomic,assign) BOOL usePushForText; //do not edit text inline, push a new VC for editing
 @property  NSString *pushInnerRowType;
 @property  NSString *pushInnerTitle;
 @property NSString * appendStringForPushText;
@@ -66,6 +66,8 @@ typedef NS_ENUM(NSUInteger, XLFormPresentationMode) {
 -(id)initWithTag:(NSString *)tag rowType:(NSString *)rowType title:(NSString *)title;
 +(XLFormRowDescriptor *)formRowDescriptorWithTag:(NSString *)tag rowType:(NSString *)rowType;
 +(XLFormRowDescriptor *)formRowDescriptorWithTag:(NSString *)tag rowType:(NSString *)rowType title:(NSString *)title;
+
++ (XLFormRowDescriptor *)textPushRowDescriptorWithTag:(NSString *)tag innerRowType:(NSString *)rowType title:(NSString *)title innerTitle:(NSString *)innerTitle;
 
 -(UITableViewCell<XLFormDescriptorCell> *)cellForFormController:(XLFormViewController *)formController;
 
