@@ -25,6 +25,7 @@
 
 #import "XLForm.h"
 #import "InputsFormViewController.h"
+#import "XLFormTextDetailViewController.h"
 
 
 NSString *const kName = @"name";
@@ -61,10 +62,27 @@ NSString *const kNotes = @"notes";
     [section addFormRow:row];
     
     // Name push
-    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"namepush" rowType:XLFormRowDescriptorTypeText title:@"Name(push)"];
-    row.usePushForText = YES;
+    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"namepush" rowType:XLFormRowDescriptorTypeSelectorPush title:@"Name(push)"];
+    row.selectorControllerClass=[XLFormTextDetailViewController class];
+    row.pushInnerRowType=XLFormRowDescriptorTypeName;
+    row.pushInnerTitle=@"NAMEIN";
+    row.value=@"";
     row.required = YES;
     [section addFormRow:row];
+
+
+    // Name push
+    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"namepush2" rowType:XLFormRowDescriptorTypeSelectorPush title:@"Name(push)d"];
+    row.selectorControllerClass=[XLFormTextDetailViewController class];
+    row.pushInnerRowType=XLFormRowDescriptorTypeName;
+    row.value=@"";
+    row.required = YES;
+    row.disabled=YES;
+    [section addFormRow:row];
+
+
+    //[self.form formRowWithTag:@""].rowType=XLFormRowDescriptorTypeSelectorPush;
+
     
     // Email
     row = [XLFormRowDescriptor formRowDescriptorWithTag:kEmail rowType:XLFormRowDescriptorTypeEmail title:@"Email"];
@@ -72,12 +90,12 @@ NSString *const kNotes = @"notes";
     [row addValidator:[XLFormValidator emailValidator]];
     [section addFormRow:row];
     
-    // Email
-    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"emailpush" rowType:XLFormRowDescriptorTypeEmail title:@"Email(push)"];
-    // validate the email
-    [row addValidator:[XLFormValidator emailValidator]];
-    row.usePushForText=YES;
-    [section addFormRow:row];
+//    // Email
+//    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"emailpush" rowType:XLFormRowDescriptorTypeEmail title:@"Email(push)"];
+//    // validate the email
+//    [row addValidator:[XLFormValidator emailValidator]];
+//    row.usePushForText=YES;
+//    [section addFormRow:row];
     
     // Twitter
     row = [XLFormRowDescriptor formRowDescriptorWithTag:kTwitter rowType:XLFormRowDescriptorTypeTwitter title:@"Twitter"];

@@ -28,6 +28,7 @@
 
 @interface XLFormTextDetailViewController ()
 @property XLFormRowDescriptor* row;
+@property BOOL alreadyInit;
 
 @end
 
@@ -53,7 +54,7 @@
     [formDescriptor addFormSection:section];
     
     // Name
-    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"name" rowType:rowDescriptor.rowType title:@""];
+    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"name" rowType:rowDescriptor.pushInnerRowType title:@""];
     row.required = YES;
     row.value=self.rowDescriptor.value;
     row.validators=self.rowDescriptor.validators;
@@ -61,7 +62,8 @@
     self.row=row;
     [section addFormRow:row];
     
-    
+    self.alreadyInit=YES;
+    self.title=self.rowDescriptor.pushInnerTitle;
     return [super initWithForm:formDescriptor];
     
 }
@@ -70,6 +72,9 @@
 {
     [super viewDidLoad];
     self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self action:@selector(savePressed:)];
+    if(!self.alreadyInit){
+        [self initWithRowDescriptor:self.rowDescriptor];
+    }
 }
 
 
@@ -78,7 +83,7 @@
 -(IBAction)savePressed:(UIBarButtonItem * __unused)button
 {
     button.enabled = NO;
-    DLog(@"button :%@", button);
+    NSLog(@"button :%@", button);
     NSArray * validationErrors = [self formValidationErrors];
     if (validationErrors.count > 0){
         [self showFormValidationError:[validationErrors firstObject]];

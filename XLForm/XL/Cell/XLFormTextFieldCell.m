@@ -114,7 +114,7 @@
         self.detailTextLabel.font = [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
 
         if(_textLabel){
-            [_textLabel removeFromSuperview];
+            [_textLabel setHidden:YES];
         }
 
     }else{
@@ -268,7 +268,10 @@
 
 -(void)updateConstraints
 {
-    
+    if(self.rowDescriptor.usePushForText){
+        [super updateConstraints];
+        return ;
+    }
 
     if (self.dynamicCustomConstraints){
         [self.contentView removeConstraints:self.dynamicCustomConstraints];
