@@ -91,8 +91,8 @@
         return;
     }
 
-    NSString *s=self.row.value;
-    if(self.rowDescriptor.rowType==XLFormRowDescriptorTypeDecimal){
+    NSString *s= ((XLFormTextFieldCell *)[self.row cellForFormController:self]).textField.text;
+    if([self.rowDescriptor.pushInnerRowType isEqualToString: XLFormRowDescriptorTypeDecimal]){
         if([s isMatch:RX(@"^\\-?\\d(\\.\\d*)?$")]){
             //continue
         }else{
@@ -102,8 +102,9 @@
                                                           delegate:self
                                                  cancelButtonTitle:@"确定" otherButtonTitles:nil];
             [alert show];
+            return;
         }
-    }else if(self.rowDescriptor.rowType==XLFormRowDescriptorTypeInteger){
+    }else if([self.rowDescriptor.pushInnerRowType isEqualToString: XLFormRowDescriptorTypeInteger]){
         if([s isMatch:RX(@"^\\-?\\d$")]){
             //continue
         }else{
@@ -113,6 +114,7 @@
                                                           delegate:self
                                                  cancelButtonTitle:@"确定" otherButtonTitles:nil];
             [alert show];
+            return;
         }
     }
 
