@@ -25,7 +25,7 @@
 
 
 #import "XLFormTextDetailViewController.h"
-
+#import "RegExCategories.h"
 @interface XLFormTextDetailViewController ()
 @property XLFormRowDescriptor* row;
 @property BOOL alreadyInit;
@@ -87,8 +87,35 @@
     NSArray * validationErrors = [self formValidationErrors];
     if (validationErrors.count > 0){
         [self showFormValidationError:[validationErrors firstObject]];
+        button.enabled=YES;
         return;
     }
+
+    NSString *s=self.row.value;
+    if(self.rowDescriptor.rowType==XLFormRowDescriptorTypeDecimal){
+        if([s isMatch:RX(@"^\\-?\\d(\\.\\d*)?$")]){
+            //continue
+        }else{
+            button.enabled=YES;
+            UIAlertView *alert= [[UIAlertView alloc] initWithTitle:@"错误"
+                                                           message:@"请输入合法的数字"
+                                                          delegate:self
+                                                 cancelButtonTitle:@"确定" otherButtonTitles:nil];
+            [alert show];
+        }
+    }else if(self.rowDescriptor.rowType==XLFormRowDescriptorTypeInteger){
+        if([s isMatch:RX(@"^\\-?\\d$")]){
+            //continue
+        }else{
+            button.enabled=YES;
+            UIAlertView *alert= [[UIAlertView alloc] initWithTitle:@"错误"
+                                                           message:@"请输入合法的整数"
+                                                          delegate:self
+                                                 cancelButtonTitle:@"确定" otherButtonTitles:nil];
+            [alert show];
+        }
+    }
+
     [self.tableView endEditing:YES];
 //    UIAlertView * alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Valid Form", nil) message:@"No errors found" delegate:self cancelButtonTitle:NSLocalizedString(@"OK", nil) otherButtonTitles:nil];
 //    [alertView show];

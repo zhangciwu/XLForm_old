@@ -69,6 +69,7 @@
 		28E093EB18F4C28200E218ED /* XLFormRightDetailCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 28E093EA18F4C28200E218ED /* XLFormRightDetailCell.m */; };
 		2CA9A3FC06E94345A2FDE415 /* libPods.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F6DF43B7BBF44F72A4493E8E /* libPods.a */; };
 		3C3360B3193E43D800BA9C4A /* XLFormSegmentedCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 3C3360B2193E43D800BA9C4A /* XLFormSegmentedCell.m */; };
+		3CDC563946C6B2C16761112C /* RegExCategories.m in Sources */ = {isa = PBXBuildFile; fileRef = 3CDC57A17739530933EC983E /* RegExCategories.m */; };
 		68ADCBB21A723ED00025F04A /* XLFormTextDetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 68ADCBB11A723ED00025F04A /* XLFormTextDetailViewController.m */; };
 		D51B8B2C19126664008C0478 /* XLFormCustomCell.m in Sources */ = {isa = PBXBuildFile; fileRef = D51B8B2B19126664008C0478 /* XLFormCustomCell.m */; };
 		D55C39BE191BCA460090B6B4 /* XLFormStepCounterCell.m in Sources */ = {isa = PBXBuildFile; fileRef = D55C39BD191BCA460090B6B4 /* XLFormStepCounterCell.m */; };
@@ -195,6 +196,8 @@
 		28E093EA18F4C28200E218ED /* XLFormRightDetailCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = XLFormRightDetailCell.m; path = XLForm/XL/Helpers/Views/XLFormRightDetailCell.m; sourceTree = SOURCE_ROOT; };
 		3C3360B1193E43D800BA9C4A /* XLFormSegmentedCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XLFormSegmentedCell.h; sourceTree = "<group>"; };
 		3C3360B2193E43D800BA9C4A /* XLFormSegmentedCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = XLFormSegmentedCell.m; sourceTree = "<group>"; };
+		3CDC57A17739530933EC983E /* RegExCategories.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RegExCategories.m; sourceTree = "<group>"; };
+		3CDC5A60F5B924881196A2AD /* RegExCategories.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RegExCategories.h; sourceTree = "<group>"; };
 		68ADCBB01A723ED00025F04A /* XLFormTextDetailViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = XLFormTextDetailViewController.h; path = XL/Controllers/XLFormTextDetailViewController.h; sourceTree = "<group>"; };
 		68ADCBB11A723ED00025F04A /* XLFormTextDetailViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = XLFormTextDetailViewController.m; path = XL/Controllers/XLFormTextDetailViewController.m; sourceTree = "<group>"; };
 		68ADCBB31A7242B80025F04A /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/InfoPlist.strings"; sourceTree = "<group>"; };
@@ -376,6 +379,8 @@
 				2850C5FA18D0F706002B7D0A /* Frameworks */,
 				2850C5F918D0F706002B7D0A /* Products */,
 				15E61D225B0D27FAB51BDD90 /* Pods */,
+				3CDC57A17739530933EC983E /* RegExCategories.m */,
+				3CDC5A60F5B924881196A2AD /* RegExCategories.h */,
 			);
 			sourceTree = "<group>";
 		};
@@ -765,6 +770,7 @@
 				28468EA418EF41D300DBB015 /* InputsFormViewController.m in Sources */,
 				28A76625193251E500D69546 /* AppDelegate.m in Sources */,
 				283B59AC194D6117000828CD /* XLFormPickerCell.m in Sources */,
+				3CDC563946C6B2C16761112C /* RegExCategories.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
