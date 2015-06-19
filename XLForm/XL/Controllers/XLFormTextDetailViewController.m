@@ -93,7 +93,7 @@
 
     NSString *s= ((XLFormTextFieldCell *)[self.row cellForFormController:self]).textField.text;
     if([self.rowDescriptor.pushInnerRowType isEqualToString: XLFormRowDescriptorTypeDecimal]){
-        if([s isMatch:RX(@"^\\-?\\d(\\.\\d*)?$")]){
+        if([s isMatch:RX(@"^\\-?\\d+(\\.\\d*)?$")]){
             //continue
         }else{
             button.enabled=YES;
@@ -105,7 +105,7 @@
             return;
         }
     }else if([self.rowDescriptor.pushInnerRowType isEqualToString: XLFormRowDescriptorTypeInteger]){
-        if([s isMatch:RX(@"^\\-?\\d$")]){
+        if([s isMatch:RX(@"^\\-?\\d+$")]){
             //continue
         }else{
             button.enabled=YES;
